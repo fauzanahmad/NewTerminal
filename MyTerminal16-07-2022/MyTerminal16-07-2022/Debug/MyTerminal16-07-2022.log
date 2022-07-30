@@ -1,0 +1,6 @@
+﻿  TerminalHelperFunctions.c
+E:\myterminal1672022\MyTerminal16-07-2022\MyTerminal16-07-2022\TerminalHelperFunctions.c(344,21): warning C4018: '<': signed/unsigned mismatch
+E:\myterminal1672022\MyTerminal16-07-2022\MyTerminal16-07-2022\TerminalHelperFunctions.c(718,9): warning C4101: 'hFile': unreferenced local variable
+E:\myterminal1672022\MyTerminal16-07-2022\MyTerminal16-07-2022\TerminalHelperFunctions.c(719,18): warning C4101: 'ffd': unreferenced local variable
+E:\myterminal1672022\MyTerminal16-07-2022\MyTerminal16-07-2022\TerminalHelperFunctions.c(965,10): warning C4018: '<': signed/unsigned mismatch
+  MyTerminal16-07-2022.vcxproj -> E:\myterminal1672022\MyTerminal16-07-2022\Debug\MyTerminal16-07-2022.exe
