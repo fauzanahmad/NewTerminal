@@ -565,9 +565,7 @@ void HandleCharKeyPress(TerminalEditInfo* pTI)
 
 	case 13:
 	{
-		/*
-		HandleEnterKeyPress(hwnd, wParam);
-		*/
+		//EnterKeyPress(pTI);
 		memset(pTI->szCommandBuffer, 0x00, sizeof(pTI->szCommandBuffer));
 		memset(pTI->szMainBuffer, 0x00, sizeof(pTI->szMainBuffer));
 
@@ -732,8 +730,8 @@ void Handle_TAB_Key(TerminalEditInfo* pTI)
 
 	if(-1 == iCommandCode)
 	{
-		pcStart = GetStartingEndPosForTab(pTI, 0);
-		pcEnd = GetStartingEndPosForTab(pTI, 1);
+		pcStart = GetStartingEndPosForTab(pTI, _T('$'), 0);
+		pcEnd = GetStartingEndPosForTab(pTI, _T('$'), 1);
 		if ( NULL == pcEnd )
 			_tcscpy(szPichliString, pcStart);
 		else
@@ -777,8 +775,248 @@ void Handle_TAB_Key(TerminalEditInfo* pTI)
 	}
 	else
 	{
-		pcStart = GetStartingEndPosForTab(pTI, 0);
-		pcEnd = GetStartingEndPosForTab(pTI, 1);
+		pcStart = GetStartingEndPosForTab(pTI, _T('$'), 0);
+		pcEnd = GetStartingEndPosForTab(pTI, _T('$'), 1);
+
+		if (NULL == pcEnd)
+		{
+			_tcscpy (szPichliString, pcStart+1);
+			memset(szAgliString, 0x00, sizeof(szAgliString));
+
+			if (_tcsrchr(szPichliString, _T('\\')))
+			{
+				pcEnd = _tcschr(szPichliString, _T('\\'));
+
+				_tcscpy(szBuffer, pcEnd + 1);
+
+				if (szPichliString[0] == _T('~'))
+				{
+					pTI->iCaretPos -= _tcslen(szPichliString);
+					pTI->iCharPos = pTI->iCaretPos;
+					iTotalLen = GetWidthOfString(pTI, szPichliString);
+					pTI->iCaretPosLen -= iTotalLen;
+
+					pcStart++;
+					memset(pcStart, 0x00, _tcslen(szBuffer));
+
+					memset(szPath, 0x00, sizeof(szPath));
+
+					dw = MAX_SIZE;
+					GetUserName(szPath, &dw);
+					if (1 == _tcslen(szBuffer))
+						_stprintf(szPichliString, _T("C:\\Users\\%s\\"), szPath);
+					else
+					{
+						_stprintf(szPichliString, _T("C:\\Users\\%s\\%s"), szPath, szBuffer);
+						FetchTheFileName(szPichliString);
+					}
+
+					_tcscpy(pcStart, szPichliString);
+
+					pTI->iCharPos += _tcslen(szPichliString);
+					pTI->iCaretPos = pTI->iCharPos;
+					pTI->iCaretPosLen += GetWidthOfString(pTI, szPichliString);
+				}
+				else
+				{
+					pTI->iCaretPos -= _tcslen(szPichliString);
+					pTI->iCharPos = pTI->iCaretPos;
+					iTotalLen = GetWidthOfString(pTI, szPichliString);
+					pTI->iCaretPosLen -= iTotalLen;
+
+					pcStart++;
+					memset(pcStart, 0x00, _tcslen(szBuffer));
+
+					memset(szPath, 0x00, sizeof(szPath));
+
+					FetchTheFileName(szPichliString);
+
+					_tcscpy(pcStart, szPichliString);
+
+					pTI->iCharPos += _tcslen(szPichliString);
+					pTI->iCaretPos = pTI->iCharPos;
+					pTI->iCaretPosLen += GetWidthOfString(pTI, szPichliString);
+				}
+			}
+			else
+			{
+				_tcscpy(szBuffer, szPichliString);
+
+				if (szBuffer[0] == _T('~'))
+				{
+					pTI->iCaretPos -= _tcslen(szBuffer);
+					pTI->iCharPos = pTI->iCaretPos;
+					iTotalLen = GetWidthOfString(pTI, szBuffer);
+					pTI->iCaretPosLen -= iTotalLen;
+
+					pcStart++;
+					memset(pcStart, 0x00, _tcslen(szBuffer));
+
+					memset(szPath, 0x00, sizeof(szPath));
+
+					dw = MAX_SIZE;
+					GetUserName(szPath, &dw);
+					if (1 == _tcslen(szBuffer))
+						_stprintf(szPichliString, _T("C:\\Users\\%s\\"), szPath);
+					else
+					{
+						_stprintf(szPichliString, _T("C:\\Users\\%s\\%s"), szPath, szBuffer);
+						FetchTheFileName(szPichliString);
+					}
+
+					_tcscpy(pcStart, szPichliString);
+
+					pTI->iCharPos += _tcslen(szPichliString);
+					pTI->iCaretPos = pTI->iCharPos;
+					pTI->iCaretPosLen += GetWidthOfString(pTI, szPichliString);
+				}
+				else
+				{
+					pTI->iCaretPos -= _tcslen(szBuffer);
+					pTI->iCharPos = pTI->iCaretPos;
+					iTotalLen = GetWidthOfString(pTI, szBuffer);
+					pTI->iCaretPosLen -= iTotalLen;
+
+					pcStart++;
+					memset(pcStart, 0x00, _tcslen(szBuffer));
+
+					memset(szPath, 0x00, sizeof(szPath));
+
+					FetchTheFileName(szPichliString);
+
+					_tcscpy(pcStart, szPichliString);
+
+					pTI->iCharPos += _tcslen(szPichliString);
+					pTI->iCaretPos = pTI->iCharPos;
+					pTI->iCaretPosLen += GetWidthOfString(pTI, szPichliString);
+				}
+			}
+		}
+		else
+		{
+			_tcsncpy(szPichliString, pcStart+1, pcEnd - pcStart - 1);
+			_tcscpy(szAgliString, pcEnd);
+
+			if (_tcsrchr(szPichliString, _T('\\')))
+			{
+				pcEnd = _tcschr(szPichliString, _T('\\'));
+
+				_tcscpy(szBuffer, pcEnd + 1);
+
+				if (szPichliString[0] == _T('~'))
+				{
+					pTI->iCaretPos -= _tcslen(szPichliString);
+					pTI->iCharPos = pTI->iCaretPos;
+					iTotalLen = GetWidthOfString(pTI, szPichliString);
+					pTI->iCaretPosLen -= iTotalLen;
+
+					pcStart++;
+					memset(pcStart, 0x00, _tcslen(szBuffer));
+
+					memset(szPath, 0x00, sizeof(szPath));
+
+					dw = MAX_SIZE;
+					GetUserName(szPath, &dw);
+					if (1 == _tcslen(szBuffer))
+						_stprintf(szPichliString, _T("C:\\Users\\%s\\"), szPath);
+					else
+					{
+						_stprintf(szPichliString, _T("C:\\Users\\%s\\%s"), szPath, szBuffer);
+						FetchTheFileName(szPichliString);
+					}
+
+					_tcscpy(pcStart, szPichliString);
+					_tcscat(pcStart, szAgliString);
+
+					pTI->iCharPos += _tcslen(szPichliString);
+					pTI->iCaretPos = pTI->iCharPos;
+					pTI->iCaretPosLen += GetWidthOfString(pTI, szPichliString);
+				}
+				else
+				{
+					pTI->iCaretPos -= _tcslen(szPichliString);
+					pTI->iCharPos = pTI->iCaretPos;
+					iTotalLen = GetWidthOfString(pTI, szPichliString);
+					pTI->iCaretPosLen -= iTotalLen;
+
+					pcStart++;
+					memset(pcStart, 0x00, _tcslen(szBuffer));
+
+					memset(szPath, 0x00, sizeof(szPath));
+
+					FetchTheFileName(szPichliString);
+
+					_tcscpy(pcStart, szPichliString);
+					_tcscat(pcStart, szAgliString);
+
+					pTI->iCharPos += _tcslen(szPichliString);
+					pTI->iCaretPos = pTI->iCharPos;
+					pTI->iCaretPosLen += GetWidthOfString(pTI, szPichliString);
+				}
+			}
+			else
+			{
+				_tcscpy(szBuffer, szPichliString);
+
+				if (szBuffer[0] == _T('~'))
+				{
+					pTI->iCaretPos -= _tcslen(szBuffer);
+					pTI->iCharPos = pTI->iCaretPos;
+					iTotalLen = GetWidthOfString(pTI, szBuffer);
+					pTI->iCaretPosLen -= iTotalLen;
+
+					pcStart++;
+					memset(pcStart, 0x00, _tcslen(szBuffer));
+
+					memset(szPath, 0x00, sizeof(szPath));
+
+					dw = MAX_SIZE;
+					GetUserName(szPath, &dw);
+					if (1 == _tcslen(szBuffer))
+						_stprintf(szPichliString, _T("C:\\Users\\%s\\"), szPath);
+					else
+					{
+						_stprintf(szPichliString, _T("C:\\Users\\%s\\%s"), szPath, szBuffer);
+						FetchTheFileName(szPichliString);
+					}
+
+					_tcscpy(pcStart, szPichliString);
+					_tcscat(pcStart, szAgliString);
+
+					pTI->iCharPos += _tcslen(szPichliString);
+					pTI->iCaretPos = pTI->iCharPos;
+					pTI->iCaretPosLen += GetWidthOfString(pTI, szPichliString);
+				}
+				else
+				{
+					pTI->iCaretPos -= _tcslen(szBuffer);
+					pTI->iCharPos = pTI->iCaretPos;
+					iTotalLen = GetWidthOfString(pTI, szBuffer);
+					pTI->iCaretPosLen -= iTotalLen;
+
+					pcStart++;
+					memset(pcStart, 0x00, _tcslen(szBuffer));
+
+					memset(szPath, 0x00, sizeof(szPath));
+
+					FetchTheFileName(szPichliString);
+					_tcscpy(pcStart, szPichliString);
+					_tcscat(pcStart, szAgliString);
+
+					pTI->iCharPos += _tcslen(szPichliString);
+					pTI->iCaretPos = pTI->iCharPos;
+					pTI->iCaretPosLen += GetWidthOfString(pTI, szPichliString);
+				}
+			}
+		}
+		SetCaretPos(pTI->iCaretPosLen, 0);
+		BufferCopyCommandToMain(pTI);
+	}
+	/**
+	else
+	{
+		pcStart = GetStartingEndPosForTab(pTI, _T('$'), 0);
+		pcEnd = GetStartingEndPosForTab(pTI, _T('$'), 1);
 
 		if (NULL == pcEnd)
 		{
@@ -815,7 +1053,7 @@ void Handle_TAB_Key(TerminalEditInfo* pTI)
 				pTI->iCaretPosLen -= iTotalLen;
 
 				pcStart++;
-				memset(pcStart, 0x00, _tcslen(pcEnd));
+				memset(pcStart, 0x00, pcEnd-pcStart);
 				_stprintf(szPichliString, _T("C:\\Users\\%s%s"), szBuffer, szTemp);
 
 				memset(szTemp, 0x00, sizeof(szTemp));
@@ -849,9 +1087,14 @@ void Handle_TAB_Key(TerminalEditInfo* pTI)
 			SetCaretPos(pTI->iCaretPosLen, 0);
 			BufferCopyCommandToMain(pTI);
 		}
+		else
+		{
+		}
 	}
+	/**/
 	BufferCopyCommandToMain(pTI);
 	ShowCaret(pTI->hwnd);
+	MyInvalidate(pTI);
 }
 
 int GetCommandCode(TCHAR* szTemp)
@@ -975,18 +1218,18 @@ void ShowCommandError(TerminalEditInfo* pTI)
 	
 }
 
-TCHAR* GetStartingEndPosForTab(TerminalEditInfo* pTI, int iForwardBackward)
+TCHAR* GetStartingEndPosForTab(TerminalEditInfo* pTI, char ch, int iForwardBackward)
 {
 	TCHAR* pcStart = &pTI->szCommandBuffer[pTI->iCaretPos];
 	TCHAR* pcEnd = NULL;
 	int iPos = pTI->iCaretPos-1;
 	if (iForwardBackward)
 	{
-		pcEnd = _tcschr(&pTI->szCommandBuffer[pTI->iCaretPos],_T('$'));
+		pcEnd = _tcschr(&pTI->szCommandBuffer[pTI->iCaretPos], ch);
 	}
 	else
 	{
-		while (pTI->szCommandBuffer[iPos] != _T('$') && iPos > 1)
+		while (pTI->szCommandBuffer[iPos] != ch && iPos > 1)
 			iPos--;
 		pcEnd = &pTI->szCommandBuffer[iPos];
 		
@@ -1024,7 +1267,16 @@ void FetchTheFileName(TCHAR *szPath)
 
 		_stprintf(szFilePath, _T("%s*.*"), szPath);
 	}
+	else
+	{
+		GetCurrentDirectory(sizeof(szFileName), szFileName);
+		_stprintf(szFilePath, _T("%s\\*.*"), szFileName);
+		memset(szFileName, 0x00,sizeof(szFileName));
+		_tcscpy(szFileName, szPath);
+		memset(szPath, 0x00, _tcslen(szPath));
+	}
 
+	iLen = 0;
 	hFile = FindFirstFile(szFilePath, &fd);
 
 	if (INVALID_HANDLE_VALUE == hFile)
@@ -1045,9 +1297,14 @@ void FetchTheFileName(TCHAR *szPath)
 			_tcscat(szPath, fd.cFileName);
 			if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 				_tcscat(szPath, _T("\\"));
+
+			iLen = 1;
 			break;
 		}
 	} while (FindNextFile( hFile, &fd) != 0 );
 
 	FindClose(hFile);
+
+	if (0 == iLen)
+		_tcscat ( szPath, szFileName);
 }

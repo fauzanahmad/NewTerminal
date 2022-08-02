@@ -1,10 +1,6 @@
 #pragma once
 #include "TerminalHeader.h"
 
-/*
-gre(TAB) FAUZAN --> Not Working
-*/
-
 int WINAPI WinMain(
 	HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,

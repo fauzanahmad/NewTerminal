@@ -4,7 +4,7 @@
 
 #pragma warning(disable:4996)
 
-#define ENABLE_UI_DEBUG	1
+#define ENABLE_UI_DEBUG	0
 
 #define MAX_SIZE	260
 #define BUFFERSIZE	65535
@@ -51,6 +51,17 @@ typedef struct
 	TCHAR *pchOutputBuffer;
 }TerminalEditInfo;
 
+typedef struct
+{
+	BOOL bASysnch;
+	HANDLE hInEvent;
+	HANDLE hOutEvent;
+	HANDLE hInPipe;
+	HANDLE hOutPipe;
+	TCHAR szOptions[260];
+	TCHAR szParameters[260];
+}THREADPARAM;
+
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 int GetWidthOfString(TerminalEditInfo*, TCHAR* pcStart1);
 int GetWidthOfChar(TerminalEditInfo* pTI, TCHAR ch);
@@ -74,5 +85,7 @@ int GetCommandCode(TCHAR* szTemp);
 void GetCommandNameAndParameters(TerminalEditInfo*, TCHAR* szCommand, TCHAR* szParams);
 void ReplaceDollerWithSpace(TCHAR* szParams);
 void ShowCommandError(TerminalEditInfo* pTI);
-TCHAR* GetStartingEndPosForTab(TerminalEditInfo* pTI, int iForwardBackward);
+TCHAR* GetStartingEndPosForTab(TerminalEditInfo* pTI, char ch, int iForwardBackward);
 void FetchTheFileName(TCHAR* szPath);
+
+void EnterKeyPress(TerminalEditInfo* pTI);
